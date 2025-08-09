@@ -83,6 +83,12 @@ $articles = $model->findAll("created_at DESC");
  */
 /*
 $pageTitle = "Accueil";
+<<<<<<< HEAD
+=======
+ob_start();   // tampon (stockage)
+require('templates/articles/index.html.php');
+$pageContent = ob_get_clean();   // afficher ce qui est stocké
+>>>>>>> ea0daf2168552c49ae77e24345d246583814d84d
 
 render('articles/index', compact('pageTitle', 'articles'));
 -->
