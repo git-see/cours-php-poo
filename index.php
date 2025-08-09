@@ -30,8 +30,8 @@ $articles = $resultats->fetchAll();
  * 3. Affichage
  */
 $pageTitle = "Accueil";
-ob_start();
+ob_start();   // tampon (stockage)
 require('templates/articles/index.html.php');
-$pageContent = ob_get_clean();
+$pageContent = ob_get_clean();   // afficher ce qui est stocké
 
 require('templates/layout.html.php');
