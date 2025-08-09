@@ -1,4 +1,18 @@
-<?php
+<!-- < ?php
+require_once('libraries/autoload.php');
+
+// require_once('libraries/controllers/Article.php');
+
+$controller = new \Controllers\Article();
+$controller->show();
+?>
+
+
+  
+
+
+/* TOUT DANS CONTROLLERS FONCTION SHOW
+< ?php
 
 /**
  * CE FICHIER DOIT AFFICHER UN ARTICLE ET SES COMMENTAIRES !
@@ -10,6 +24,13 @@
  * 
  * On va ensuite afficher l'article puis ses commentaires
  */
+require_once('libraries/database.php');
+require_once('libraries/utils.php');
+require_once('libraries/models/Article.php');
+require_once('libraries/models/Comment.php');
+
+$articleModel = new Article();
+$commentModel = new Comment();
 
 /**
  * 1. Récupération du param "id" et vérification de celui-ci
@@ -18,7 +39,7 @@
 $article_id = null;
 
 // Mais si il y'en a un et que c'est un nombre entier, alors c'est cool
-if (!empty($_GET['id']) && ctype_digit($_GET['id'])) {
+if (!empty($_GET['id']) && ctype_digit($_GET['id'])) {  // ctype_digit: vérifie = entier
     $article_id = $_GET['id'];
 }
 
@@ -35,38 +56,38 @@ if (!$article_id) {
  * 
  * PS : Vous remarquez que ce sont les mêmes lignes que pour l'index.php ?!
  */
-$pdo = new PDO('mysql:host=localhost;dbname=blogpoo;charset=utf8', 'root', '', [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-]);
+// $pdo = getPdo();
 
 /**
  * 3. Récupération de l'article en question
  * On va ici utiliser une requête préparée car elle inclue une variable qui provient de l'utilisateur : Ne faites
  * jamais confiance à ce connard d'utilisateur ! :D
  */
-$query = $pdo->prepare("SELECT * FROM articles WHERE id = :article_id");
-
-// On exécute la requête en précisant le paramètre :article_id 
-$query->execute(['article_id' => $article_id]);
-
-// On fouille le résultat pour en extraire les données réelles de l'article
-$article = $query->fetch();
+$article = $articleModel->find($article_id);
 
 /**
  * 4. Récupération des commentaires de l'article en question
  * Pareil, toujours une requête préparée pour sécuriser la donnée filée par l'utilisateur (cet enfoiré en puissance !)
  */
-$query = $pdo->prepare("SELECT * FROM comments WHERE article_id = :article_id");
-$query->execute(['article_id' => $article_id]);
-$commentaires = $query->fetchAll();
+$commentaires = $commentModel->findAllWithArticle($article_id);
 
 /**
  * 5. On affiche 
  */
 $pageTitle = $article['title'];
-ob_start();
-require('templates/articles/show.html.php');
-$pageContent = ob_get_clean();
 
-require('templates/layout.html.php');
+/*render('articles/show', [
+    'pageTitle'     => $pageTitle,
+    'article'       => $article,
+    'commentaires'  => $commentaires,
+    'article_id'    => $article_id
+]);
+*/
+
+render('articles/show', compact('pageTitle', 'article', 'commentaires', 'article_id'));  // compact();  passer une liste d'arguments qui sont les noms des variables à partir desquelles on va créer un tableau associatif
+
+// Exemple:
+// compact('pageTitle', 'article')
+// revient au tableau associatif où la clé 'pageTitle serait identique à $pageTitle....
+// ['pageTitle' = > $pageArticle, 'article' = > $article]
+--> 
